@@ -1,7 +1,11 @@
 package com.example.strategy.service;
 
+import com.example.market.common.data.Market;
+import com.example.market.common.data.Symbol;
+import com.example.market.common.data.TimeInterval;
 import com.example.strategy.model.Strategy;
 import com.example.strategy.repository.StrategyRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +26,8 @@ public class StrategyService {
         return repository.findById(id);
     }
 
-    public List<Strategy> findAll() {
-        return repository.findAll();
+    @Transactional
+    public List<Strategy> findAll(Market market, Symbol symbol, TimeInterval timeInterval) {
+        return repository.findAllByMarketAndSymbolAndTimeInterval(market, symbol, timeInterval);
     }
 }
