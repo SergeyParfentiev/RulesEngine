@@ -47,7 +47,7 @@ public abstract class AbstractCandlestickRepository<T extends Candlestick> {
         String baseTableName = "binance_xrp_usdt_candlestick";
 
         StringBuilder queryBuilder = new StringBuilder();
-        List<MillisRange> milliRanges = TimeIntervalUtil.getRoundedAndPartTime(timeInterval, start, end, wholeLastPart);
+        List<MillisRange> milliRanges = TimeIntervalUtil.roundedAndPartTime(timeInterval, start, end, wholeLastPart);
 
         if (milliRanges.size() > 0) {
             for (MillisRange mr : milliRanges) {

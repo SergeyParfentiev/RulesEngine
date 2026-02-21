@@ -11,7 +11,7 @@ public class TimeIntervalUtil {
 
     public static final int ONE_MINUTE = 60_000;
 
-    public static List<MillisRange> getRoundedAndPartTime(TimeInterval timeInterval, long startMillis, long endMillis, boolean wholeLastPart) {
+    public static List<MillisRange> roundedAndPartTime(TimeInterval timeInterval, long startMillis, long endMillis, boolean wholeLastPart) {
         List<MillisRange> milliRanges = new ArrayList<>();
 
         if (Calendar.DAY_OF_YEAR == timeInterval.calendarFiled()) {
@@ -139,5 +139,16 @@ public class TimeIntervalUtil {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
+    }
+
+    public static List<TimeInterval> findSuitableTimeIntervals(long time) {
+        List<TimeInterval> result = new ArrayList<>();
+
+        for (TimeInterval timeInterval : TimeInterval.values()) {
+            if (time % ((long) timeInterval.amount() * ONE_MINUTE) == 0) {
+                result.add(timeInterval);
+            }
+        }
+        return result;
     }
 }
