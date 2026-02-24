@@ -22,4 +22,9 @@ public class BinanceXrpUsdtCandlestickRepository extends AbstractCandlestickRepo
     public Symbol symbol() {
         return Symbol.XRP_USDT;
     }
+
+    @Override
+    public BinanceXrpUsdtCandlestick candlestickInstance() {
+        return new BinanceXrpUsdtCandlestick();
+    }
 }

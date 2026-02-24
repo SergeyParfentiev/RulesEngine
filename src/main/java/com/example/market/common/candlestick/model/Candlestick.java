@@ -8,10 +8,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
 @Getter
+@ToString
 @MappedSuperclass
 @EqualsAndHashCode
 public abstract class Candlestick {
@@ -19,37 +22,51 @@ public abstract class Candlestick {
     @Id
     private long openTime;
 
-    @Column(precision = 16, scale = 8)
+    @Column(precision = 16, scale = 8, nullable = false)
     private BigDecimal openPrice;
 
-    @Column(precision = 16, scale = 8)
+    @Column(precision = 16, scale = 8, nullable = false)
     private BigDecimal highPrice;
 
-    @Column(precision = 16, scale = 8)
+    @Column(precision = 16, scale = 8, nullable = false)
     private BigDecimal lowPrice;
 
-    @Column(precision = 16, scale = 8)
+    @Column(precision = 16, scale = 8, nullable = false)
     private BigDecimal closePrice;
 
-    @Column(precision = 20, scale = 10)
+    @Column(precision = 20, scale = 10, nullable = false)
     private BigDecimal volume;
 
     @Column
     private long closeTime;
 
-    @Column(precision = 20, scale = 10)
+    @Column(precision = 20, scale = 10, nullable = false)
     private BigDecimal quoteAssetVolume;
 
     @Column
     private int tradesCount;
 
-    @Column(precision = 20, scale = 10)
+    @Column(precision = 20, scale = 10, nullable = false)
     private BigDecimal takerBuyBaseAssetVolume;
 
-    @Column(precision = 20, scale = 10)
+    @Column(precision = 20, scale = 10, nullable = false)
     private BigDecimal takerBuyQuoteAssetVolume;
 
     public Candlestick() {
+    }
+
+    public Candlestick copy() {
+        Candlestick copy = instance();
+        copy.fill(this);
+        return copy;
+    }
+
+    protected abstract Candlestick instance();
+
+    public void fill(Candlestick candlestick) {
+        fill(candlestick.openTime, candlestick.openPrice, candlestick.highPrice, candlestick.lowPrice,
+                candlestick.closePrice, candlestick.volume, candlestick.closeTime, candlestick.quoteAssetVolume,
+                candlestick.tradesCount, candlestick.takerBuyBaseAssetVolume, candlestick.takerBuyQuoteAssetVolume);
     }
 
     public void fill(long openTime, BigDecimal openPrice, BigDecimal highPrice, BigDecimal lowPrice,

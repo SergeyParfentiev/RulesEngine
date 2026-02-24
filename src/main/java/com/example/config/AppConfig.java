@@ -22,12 +22,13 @@ public class AppConfig {
     }
 
     @Bean
-    public Map<Pair<Market, Symbol>, AbstractCandlestickRepository<? extends Candlestick>> getCandlestickRepositoryMap(
+    @SuppressWarnings("unchecked")
+    public Map<Pair<Market, Symbol>, AbstractCandlestickRepository<Candlestick>> getCandlestickRepositoryMap(
             List<AbstractCandlestickRepository<? extends Candlestick>> repositories) {
-        Map<Pair<Market, Symbol>, AbstractCandlestickRepository<? extends Candlestick>> repositoryMap = new HashMap<>();
+        Map<Pair<Market, Symbol>, AbstractCandlestickRepository<Candlestick>> repositoryMap = new HashMap<>();
 
         for (AbstractCandlestickRepository<? extends Candlestick> repository : repositories) {
-            repositoryMap.put(new Pair<>(repository.market(), repository.symbol()), repository);
+            repositoryMap.put(new Pair<>(repository.market(), repository.symbol()), (AbstractCandlestickRepository<Candlestick>) repository);
         }
         return repositoryMap;
     }

@@ -12,8 +12,9 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Table;
 import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class AbstractCandlestickRepository<T extends Candlestick> {
 
@@ -24,6 +25,19 @@ public abstract class AbstractCandlestickRepository<T extends Candlestick> {
     private final Class<T> candlestickClass;
     protected final JpaRepositoryImplementation<T, Long> repository;
 
+    private final Map<TimeInterval, List<Candlestick>> candlesticksByTimeInterval =
+            Arrays.stream(TimeInterval.values())
+                    .collect(Collectors.toMap(
+                            Function.identity(),
+                            timeInterval -> new LinkedList<>(),
+                            (a, b) -> a,
+                            () -> new EnumMap<>(TimeInterval.class)));
+
+    private final List<Candlestick> candlesticks = new ArrayList<>();
+
+    // TODO: 2/21/2026 create algorithm for real month(or another) back shifting
+    private final static long MONTH_TIME = 2592000000L;
+
     public AbstractCandlestickRepository(JpaRepositoryImplementation<T, Long> repository, Class<T> candlestickClass) {
         this.repository = repository;
         this.candlestickClass = candlestickClass;
@@ -31,7 +45,30 @@ public abstract class AbstractCandlestickRepository<T extends Candlestick> {
     }
 
     public T save(T candlestick) {
-        return repository.save(candlestick);
+        checkSave(candlestick);
+
+        T saved = repository.save(candlestick);
+        candlesticks.add(saved);
+
+        return saved;
+    }
+
+    private void checkSave(T candlestick) {
+        if (candlesticks.size() > 0) {
+            long lastOpenTime = candlesticks.get(candlesticks.size() - 1).openTime();
+
+            if (candlestick.openTime() - lastOpenTime != TimeIntervalUtil.ONE_MINUTE) {
+                throw new IllegalArgumentException("Incorrect open time range between candlesticks during save. " +
+                        "Previous candlestick open time %d, new candlestick open time %d."
+                        .formatted(lastOpenTime, candlestick.openTime()));
+            }
+        }
+
+        if (candlestick.closeTime() - candlestick.openTime() != TimeIntervalUtil.ONE_MINUTE - 1) {
+            throw new IllegalArgumentException("Incorrect open close candlestick time range during save. " +
+                    "New candlestick open time %d, new candlestick close time %d"
+                    .formatted(candlestick.openTime(), candlestick.closeTime()));
+        }
     }
 
     public List<T> saveAll(List<T> candlesticks) {
@@ -75,4 +112,6 @@ public abstract class AbstractCandlestickRepository<T extends Candlestick> {
     public abstract Market market();
 
     public abstract Symbol symbol();
+
+    public abstract T candlestickInstance();
 }

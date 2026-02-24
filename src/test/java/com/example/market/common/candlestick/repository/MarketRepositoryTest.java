@@ -1,4 +1,4 @@
-package com.example.market;
+package com.example.market.common.candlestick.repository;
 
 import com.example.AbstractCleanDBTest;
 import com.example.market.common.data.TimeInterval;
@@ -102,8 +102,6 @@ public class MarketRepositoryTest extends AbstractCleanDBTest {
                 Arguments.of(THIRTY_MINUTES_INTERVAL_LEFT_PART),
                 Arguments.of(THIRTY_MINUTES_INTERVAL_RIGHT_PART),
                 Arguments.of(THIRTY_MINUTES_INTERVAL_LEFT_PART_AND_FULL_MIDDLE_AND_RIGHT_PART)
-//                                Arguments.of(FIVE_MINUTES_INTERVAL_LEFT_PART)
-
         );
     }
 
